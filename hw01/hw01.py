@@ -10,9 +10,9 @@ def a_plus_abs_b(a, b):
     5
     """
     if b < 0:
-        f = _____
+        f = lambda x, y: x - y
     else:
-        f = _____
+        f = lambda x, y: x + y
     return f(a, b)
 
 
@@ -40,7 +40,7 @@ def two_of_three(x, y, z):
     >>> two_of_three(5, 5, 5)
     50
     """
-    return _____
+    return min(x, y, z)**2 + min(max(x, y), max(x, z), max(y, z))**2
 
 
 def two_of_three_syntax_check():
@@ -65,6 +65,12 @@ def largest_factor(n):
     1
     """
     "*** YOUR CODE HERE ***"
+    res, i, end = 1, 1, n // 2
+    while i <= end:
+        if n % i == 0:
+            res = i
+        i += 1
+    return res
 
 
 def limited(x, z, limit):
@@ -90,7 +96,7 @@ def invert_short(x, limit):
     >>> invert_short(x, 100)  # No error, even though 1/x divides by 0!
     100
     """
-    return limited(x, 1 / x, limit)
+    return limited(x, limit if x == 0 else 1 / x, limit)
 
 
 def change_short(x, y, limit):
@@ -108,7 +114,7 @@ def change_short(x, y, limit):
     >>> change_short(x, y, 100)  # No error, even though abs(y - x) / x divides by 0!
     100
     """
-    return limited(x, abs(y - x) / x, limit)
+    return limited(x, limit if x == 0 else abs(y - x) / x, limit)
 
 
 def invert_and_change_syntax_check():
@@ -140,6 +146,18 @@ def hailstone(n):
     7
     """
     "*** YOUR CODE HERE ***"
+    assert n > 0, 'n must greater than 0'
+    res = 0
+    while n != 1:
+        res += 1
+        print(n)
+        if n % 2 == 0:
+            n //= 2
+        else:
+            n = n * 3 + 1
+    print(n)
+    res += 1
+    return res
 
 
 "*** YOUR CODE HERE ***"
