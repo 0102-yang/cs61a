@@ -26,16 +26,26 @@ def unique_digits(n):
     2
     """
     "*** YOUR CODE HERE ***"
+    digits = set()
+    while n > 0:
+        digits.add(n % 10)
+        n //= 10
+    return len(digits)
 
 
 def has_digit(n, k):
     """Returns whether K is a digit in N.
     >>> has_digit(10, 1)
     True
-    >>> has_digit(12, 7)
+    >>> has_digit(12, 7) 
     False
     """
     "*** YOUR CODE HERE ***"
+    digits = set()
+    while n > 0:
+        digits.add(n % 10)
+        n //= 10
+    return k in digits
 
 
 def ordered_digits(x):
@@ -58,6 +68,14 @@ def ordered_digits(x):
 
     """
     "*** YOUR CODE HERE ***"
+    tmp_digit = 9
+    while x > 0:
+        tmp = x % 10
+        if tmp > tmp_digit:
+            return False
+        tmp_digit = tmp
+        x //= 10
+    return True
 
 
 def get_k_run_starter(n, k):
@@ -81,12 +99,11 @@ def get_k_run_starter(n, k):
     """
     i = 0
     final = None
-    while ____________________________:
-        while ____________________________:
-            ____________________________
-        final = ____________________________
-        i = ____________________________
-        n = ____________________________
+    while i <= k:
+        tmp_digit = None
+        while tmp_digit == None or (n != 0 and n % 10 < tmp_digit):
+            tmp_digit, n = n % 10, n // 10
+        final, i = tmp_digit, i + 1
     return final
 
 
@@ -107,11 +124,19 @@ def make_repeater(func, n):
     """
     "*** YOUR CODE HERE ***"
 
+    def nest_fun(value):
+        for i in range(n):
+            value = func(value)
+        return value
+
+    return nest_fun
+
 
 def composer(func1, func2):
     """Return a function f, such that f(x) = func1(func2(x))."""
     def f(x):
         return func1(func2(x))
+
     return f
 
 
@@ -124,6 +149,7 @@ def apply_twice(func):
     16
     """
     "*** YOUR CODE HERE ***"
+    return composer(func, func)
 
 
 def protected_secret(password, secret, num_attempts):
@@ -146,4 +172,20 @@ def protected_secret(password, secret, num_attempts):
     """
     def get_secret(password_attempt):
         "*** YOUR CODE HERE ***"
+        if num_attempts <= 0:
+            print('SECRET LOCKED')
+            return protected_secret(password, secret, num_attempts)
+        elif password_attempt == password:
+            print(secret)
+            return protected_secret(password, secret, num_attempts)
+        else:
+            print('INCORRECT PASSWORD')
+            return protected_secret(password, secret, num_attempts - 1)
+
     return get_secret
+
+
+my_secret = protected_secret("correcthorsebatterystaple", "I love UCB", 2)
+my_secret('hax')
+my_secret('hax')
+my_secret('hax')
