@@ -183,9 +183,3 @@ def protected_secret(password, secret, num_attempts):
             return protected_secret(password, secret, num_attempts - 1)
 
     return get_secret
-
-
-my_secret = protected_secret("correcthorsebatterystaple", "I love UCB", 2)
-my_secret('hax')
-my_secret('hax')
-my_secret('hax')

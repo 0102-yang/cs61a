@@ -22,6 +22,14 @@ def roll_dice(num_rolls, dice=six_sided):
     assert num_rolls > 0, 'Must roll at least once.'
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
+    res_dice, sow_sad = 0, False
+    for i in range(num_rolls):
+        tmp_dice = dice()
+        if tmp_dice == 1:
+            sow_sad = True
+        res_dice += tmp_dice
+
+    return 1 if sow_sad else res_dice
     # END PROBLEM 1
 
 
@@ -32,6 +40,9 @@ def picky_piggy(score):
     """
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
+    # Get the 'scoreth' digit of 0.142857...
+    digits = 582417 // (10**(score % 6))
+    return digits % 10
     # END PROBLEM 2
 
 
@@ -52,6 +63,9 @@ def take_turn(num_rolls, opponent_score, dice=six_sided, goal=GOAL_SCORE):
     assert opponent_score < goal, 'The game should be over.'
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    if num_rolls == 0:
+        return picky_piggy(opponent_score)
+    return roll_dice(num_rolls, dice)
     # END PROBLEM 3
 
 
@@ -63,6 +77,7 @@ def hog_pile(player_score, opponent_score):
     """
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    return player_score if player_score == opponent_score else 0
     # END PROBLEM 4
 
 
@@ -82,8 +97,13 @@ def silence(score0, score1):
     return silence
 
 
-def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
-         goal=GOAL_SCORE, say=silence):
+def play(strategy0,
+         strategy1,
+         score0=0,
+         score1=0,
+         dice=six_sided,
+         goal=GOAL_SCORE,
+         say=silence):
     """Simulate a game and return the final scores of both players, with Player
     0's score first, and Player 1's score second.
 
@@ -102,6 +122,28 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     who = 0  # Who is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+
+    def score(num_rolls, player_score, opponent_score):
+        """ Calculate the score of this turn.
+
+        strategy: The strategy may take.
+        player_score: The score for current player
+        opponent_score: The score for opponent player.
+        """
+        take_turn_score = take_turn(num_rolls, opponent_score, dice, goal)
+        hug_pile_score = hog_pile(player_score + take_turn_score,
+                                  opponent_score)
+        return take_turn_score + hug_pile_score
+
+    while score0 < goal and score1 < goal:
+        # Calculate the score.
+        if who == 0:
+            score0 += score(strategy0(score0, score1), score0, score1)
+        else:
+            score1 += score(strategy1(score1, score0), score1, score0)
+
+        # Change current player.
+        who = next_player(who)
     # END PROBLEM 5
     # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
     # BEGIN PROBLEM 6
@@ -109,6 +151,14 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     # END PROBLEM 6
     return score0, score1
 
+
+def strategy(num1, num2):
+    return 3
+
+
+always_three = make_test_dice(3)
+s0, s1 = play(strategy, strategy, goal=15, dice=always_three)
+s0
 
 #######################
 # Phase 2: Commentary #
@@ -144,6 +194,7 @@ def announce_lead_changes(last_leader=None):
         if leader != None and leader != last_leader:
             print('Player', leader, 'takes the lead by', abs(score0 - score1))
         return announce_lead_changes(leader)
+
     return say
 
 
@@ -162,6 +213,7 @@ def both(f, g):
     """
     def say(score0, score1):
         return both(f(score0, score1), g(score0, score1))
+
     return say
 
 
@@ -207,6 +259,7 @@ def always_roll(n):
     """
     def strategy(score, opponent_score):
         return n
+
     return strategy
 
 
@@ -301,6 +354,7 @@ def final_strategy(score, opponent_score):
     return 6  # Remove this line once implemented.
     # END PROBLEM 12
 
+
 ##########################
 # Command Line Interface #
 ##########################
@@ -314,7 +368,9 @@ def run(*args):
     """Read in the command-line argument and calls corresponding functions."""
     import argparse
     parser = argparse.ArgumentParser(description="Play Hog")
-    parser.add_argument('--run_experiments', '-r', action='store_true',
+    parser.add_argument('--run_experiments',
+                        '-r',
+                        action='store_true',
                         help='Runs strategy experiments')
 
     args = parser.parse_args()
