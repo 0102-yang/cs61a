@@ -152,14 +152,6 @@ def play(strategy0,
     return score0, score1
 
 
-def strategy(num1, num2):
-    return 3
-
-
-always_three = make_test_dice(3)
-s0, s1 = play(strategy, strategy, goal=15, dice=always_three)
-s0
-
 #######################
 # Phase 2: Commentary #
 #######################
