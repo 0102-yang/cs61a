@@ -134,6 +134,7 @@ def make_repeater(func, n):
 
 def composer(func1, func2):
     """Return a function f, such that f(x) = func1(func2(x))."""
+
     def f(x):
         return func1(func2(x))
 
@@ -170,6 +171,7 @@ def protected_secret(password, secret, num_attempts):
     >>> my_secret = my_secret("correcthorsebatterystaple")
     SECRET LOCKED
     """
+
     def get_secret(password_attempt):
         "*** YOUR CODE HERE ***"
         if num_attempts <= 0:
