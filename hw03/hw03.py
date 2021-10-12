@@ -23,6 +23,9 @@ def num_eights(pos):
     True
     """
     "*** YOUR CODE HERE ***"
+    if pos == 0:
+        return 0
+    return num_eights(pos // 10) + (1 if pos % 10 == 8 else 0)
 
 
 def pingpong(n):
@@ -59,6 +62,16 @@ def pingpong(n):
     """
     "*** YOUR CODE HERE ***"
 
+    def recursion(i, step, times):
+        if times == n:
+            return i
+        if num_eights(times) or times % 8 == 0:
+            return recursion(i - step, -step, times + 1)
+        else:
+            return recursion(i + step, step, times + 1)
+
+    return recursion(1, 1, 1)
+
 
 def missing_digits(n):
     """Given a number a that is in sorted, increasing order,
@@ -89,6 +102,15 @@ def missing_digits(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    last = n // 10
+    if last == 0:
+        return 0
+
+    tmp_res = missing_digits(last)
+    if (n % 10) - (last % 10) <= 1:
+        return tmp_res
+    else:
+        return tmp_res + (n % 10) - (last % 10) - 1
 
 
 def ascending_coin(coin):
@@ -145,6 +167,19 @@ def count_coins(change):
     True
     """
     "*** YOUR CODE HERE ***"
+
+    def constrained_count(tmp_change, smallest_coin):
+        if tmp_change == 0:
+            return 1
+        if tmp_change < 0:
+            return 0
+        if smallest_coin is None:
+            return 0
+        without_coin = constrained_count(tmp_change, ascending_coin(smallest_coin))
+        with_coin = constrained_count(tmp_change - smallest_coin, smallest_coin)
+        return without_coin + with_coin
+
+    return constrained_count(change, 1)
 
 
 def print_move(origin, destination):
