@@ -21,6 +21,14 @@ def summation(n, term):
     assert n >= 1
     "*** YOUR CODE HERE ***"
 
+    def calculate(num):
+        if num == 0:
+            return 0
+
+        return calculate(num - 1) + term(num)
+
+    return calculate(n)
+
 
 def pascal(row, column):
     """Returns the value of the item in Pascal's Triangle 
@@ -35,6 +43,11 @@ def pascal(row, column):
     6
     """
     "*** YOUR CODE HERE ***"
+    if row < 0 or column > row:
+        return 0
+    if column == 0 or column == row:
+        return 1
+    return pascal(row - 1, column - 1) + pascal(row - 1, column)
 
 
 def paths(m, n):
@@ -51,6 +64,12 @@ def paths(m, n):
     1
     """
     "*** YOUR CODE HERE ***"
+    if m < 1 or n < 1:
+        return 0
+    elif m == 1 or n == 1:
+        return 1
+    else:
+        return paths(m - 1, n) + paths(m, n - 1)
 
 
 def couple(s, t):
@@ -67,6 +86,11 @@ def couple(s, t):
     """
     assert len(s) == len(t)
     "*** YOUR CODE HERE ***"
+    res = []
+    for i in range(0, len(s)):
+        tmp_res = [s[i], t[i]]
+        res.append(tmp_res)
+    return res
 
 
 def coords(fn, seq, lower, upper):
@@ -77,7 +101,7 @@ def coords(fn, seq, lower, upper):
     [[-2, 4], [1, 1], [3, 9]]
     """
     "*** YOUR CODE HERE ***"
-    return ______
+    return [[seq[x], fn(seq[x])] for x in range(0, len(seq)) if lower <= fn(seq[x]) <= upper]
 
 
 def riffle(deck):
@@ -90,4 +114,5 @@ def riffle(deck):
     [0, 10, 1, 11, 2, 12, 3, 13, 4, 14, 5, 15, 6, 16, 7, 17, 8, 18, 9, 19]
     """
     "*** YOUR CODE HERE ***"
-    return _______
+    return [e for items in zip([deck[x] for x in range(0, len(deck) // 2)],
+                               [deck[x + len(deck) // 2] for x in range(0, len(deck) // 2)]) for e in items]
