@@ -12,6 +12,17 @@ def factors_list(n):
     all_factors = []
     "*** YOUR CODE HERE ***"
 
+    def recursive(num):
+        if num == 1:
+            return
+
+        tmp = num // 2 + 1 if num % 2 == 1 else num // 2
+        recursive(tmp)
+        all_factors.append(tmp)
+
+    recursive(n)
+    return all_factors
+
 
 def flatten(s):
     """Returns a flattened version of list s.
@@ -29,7 +40,18 @@ def flatten(s):
     >>> x
     [[1, [1, 1]], 1, [1, 1]]
     """
+    res = []
     "*** YOUR CODE HERE ***"
+
+    def recursive(t):
+        for item in t:
+            if type(item) == list:
+                recursive(item)
+            else:
+                res.append(item)
+
+    recursive(s)
+    return res
 
 
 from math import sqrt
@@ -47,6 +69,7 @@ def distance(city_a, city_b):
     5.0
     """
     "*** YOUR CODE HERE ***"
+    return sqrt((get_lat(city_a) - get_lat(city_b)) ** 2 + (get_lon(city_a) - get_lon(city_b)) ** 2)
 
 
 def closer_city(lat, lon, city_a, city_b):
@@ -65,6 +88,8 @@ def closer_city(lat, lon, city_a, city_b):
     'Bucharest'
     """
     "*** YOUR CODE HERE ***"
+    tmp_city = make_city('tmp', lat, lon)
+    return get_name(city_a) if distance(tmp_city, city_a) < distance(tmp_city, city_b) else get_name(city_b)
 
 
 def check_city_abstraction():
@@ -89,6 +114,7 @@ def check_city_abstraction():
     'Bucharest'
     >>> change_abstraction(False)
     """
+
 
 # Treat all the following code as being behind an abstraction layer,
 # you shouldn't need to look at it.
@@ -164,6 +190,17 @@ def berry_finder(t):
     True
     """
     "*** YOUR CODE HERE ***"
+    if t is None:
+        return False
+
+    if label(t) == 'berry':
+        return True
+
+    for item in branches(t):
+        if berry_finder(item):
+            return True
+
+    return False
 
 
 def sprout_leaves(t, leaves):
@@ -200,6 +237,28 @@ def sprout_leaves(t, leaves):
           2
     """
     "*** YOUR CODE HERE ***"
+
+    def init_subtrees():
+        res = []
+        for item in leaves:
+            res.append(tree(item))
+        return res
+
+    def recursive(node):
+        if node is None:
+            return
+
+        if is_leaf(node):
+            tmp_branches = init_subtrees()
+        else:
+            tmp_branches = []
+            for item in branches(node):
+                tmp_branches.append(recursive(item))
+
+        return tree(label(node), tmp_branches)
+
+    return recursive(t)
+
 
 # Abstraction tests for sprout_leaves and berry_finder
 
@@ -267,8 +326,10 @@ change_abstraction.changed = False
 
 # Tree ADT
 
-def tree(label, branches=[]):
+def tree(label, branches=None):
     """Construct a tree with the given label value and a list of branches."""
+    if branches is None:
+        branches = []
     if change_abstraction.changed:
         for branch in branches:
             assert is_tree(branch), 'branches must be trees'
