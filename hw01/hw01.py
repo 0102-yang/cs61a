@@ -9,11 +9,7 @@ def a_plus_abs_b(a, b):
     >>> a_plus_abs_b(2, -3)
     5
     """
-    if b < 0:
-        f = lambda x, y: x - y
-    else:
-        f = lambda x, y: x + y
-    return f(a, b)
+    return a - b if b < 0 else a + b
 
 
 def a_plus_abs_b_syntax_check():
@@ -40,7 +36,7 @@ def two_of_three(x, y, z):
     >>> two_of_three(5, 5, 5)
     50
     """
-    return min(x, y, z)**2 + min(max(x, y), max(x, z), max(y, z))**2
+    return min(x, y, z) ** 2 + min(max(x, y), max(x, z), max(y, z)) ** 2
 
 
 def two_of_three_syntax_check():
@@ -75,10 +71,7 @@ def largest_factor(n):
 
 def limited(x, z, limit):
     """Logic that is common to invert and change."""
-    if x != 0:
-        return min(z, limit)
-    else:
-        return limit
+    return min(z, limit) if x != 0 else limit
 
 
 def invert_short(x, limit):
@@ -156,8 +149,7 @@ def hailstone(n):
         else:
             n = n * 3 + 1
     print(n)
-    res += 1
-    return res
+    return res + 1
 
 
 "*** YOUR CODE HERE ***"
