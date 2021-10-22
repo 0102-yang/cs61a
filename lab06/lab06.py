@@ -1,7 +1,7 @@
 HW_SOURCE_FILE = __file__
 
 
-def insert_items(lst, entry, elem):
+def insert_items(lst: list, entry, elem):
     """Inserts elem into lst after each occurence of entry and then returns lst.
 
     >>> test_lst = [1, 5, 8, 5, 2, 3]
@@ -28,6 +28,14 @@ def insert_items(lst, entry, elem):
     True
     """
     "*** YOUR CODE HERE ***"
+    i = 0
+    while i < len(lst):
+        if lst[i] == entry:
+            lst.insert(i + 1, elem)
+            i += 2
+        else:
+            i += 1
+    return lst
 
 
 def count_occurrences(t, n, x):
@@ -51,6 +59,11 @@ def count_occurrences(t, n, x):
     2
     """
     "*** YOUR CODE HERE ***"
+    res = 0
+    for i in range(n):
+        if next(t) == x:
+            res += 1
+    return res
 
 
 def repeated(t, k):
@@ -76,3 +89,16 @@ def repeated(t, k):
     """
     assert k > 1
     "*** YOUR CODE HERE ***"
+    res, count = next(t), 1
+    while True:
+        tmp_val = next(t)
+        if tmp_val == res:
+            count += 1
+        else:
+            res = tmp_val
+            count = 1
+
+        if count == k:
+            break
+
+    return res
