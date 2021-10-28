@@ -1,3 +1,77 @@
+class Tree:
+    """
+    >>> t = Tree(3, [Tree(2, [Tree(5)]), Tree(4)])
+    >>> t.label
+    3
+    >>> t.branches[0].label
+    2
+    >>> t.branches[1].is_leaf()
+    True
+    """
+    def __init__(self, label, branches=[]):
+        for b in branches:
+            assert isinstance(b, Tree)
+        self.label = label
+        self.branches = list(branches)
+
+    def is_leaf(self):
+        return not self.branches
+
+    def __repr__(self):
+        if self.branches:
+            branch_str = ', ' + repr(self.branches)
+        else:
+            branch_str = ''
+        return 'Tree({0}{1})'.format(self.label, branch_str)
+
+    def __str__(self):
+        def print_tree(t, indent=0):
+            tree_str = '  ' * indent + str(t.label) + "\n"
+            for b in t.branches:
+                tree_str += print_tree(b, indent + 1)
+            return tree_str
+
+        return print_tree(self).rstrip()
+
+
+def tree(label, branches=None):
+    if branches is None:
+        branches = []
+    return Tree(label, branches)
+
+
+def label(t):
+    return t.label
+
+
+def branches(t):
+    return t.branches
+
+
+def is_leaf(t):
+    return t.is_leaf()
+
+
+def print_tree(t):
+    print(t)
+
+
+def naturals():
+    """A generator function that yields the infinite sequence of natural
+    numbers, starting at 1.
+
+    >>> m = naturals()
+    >>> type(m)
+    <class 'generator'>
+    >>> [next(m) for _ in range(10)]
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    """
+    i = 1
+    while True:
+        yield i
+        i += 1
+
+
 def gen_perms(seq):
     """Generates all permutations of the given sequence. Each permutation is a
     list of the elements in SEQ in a different order. The permutations may be
@@ -21,6 +95,12 @@ def gen_perms(seq):
     [['a', 'b'], ['b', 'a']]
     """
     "*** YOUR CODE HERE ***"
+    if not seq:
+        yield []
+    else:
+        for perm in gen_perms(seq[1:]):
+            for i in range(len(seq)):
+                yield perm[:i] + [seq[0]] + perm[i:]
 
 
 def path_yielder(t, value):
@@ -58,9 +138,11 @@ def path_yielder(t, value):
     [[0, 2], [0, 2, 1, 2]]
     """
     "*** YOUR CODE HERE ***"
-    for _______________ in _________________:
-        for _______________ in _________________:
-            "*** YOUR CODE HERE ***"
+    if label(t) == value:
+        yield [label(t)]
+    for b in branches(t):
+        for item in path_yielder(b, value):
+            yield [label(t)] + item
 
 
 def preorder(t):
@@ -75,6 +157,13 @@ def preorder(t):
     """
     "*** YOUR CODE HERE ***"
 
+    if not branches(t):
+        return [label(t)]
+    flattened_branches = []
+    for child in branches(t):
+        flattened_branches += preorder(child)
+    return [label(t)] + flattened_branches
+
 
 def generate_preorder(t):
     """Yield the entries in this tree in the order that they
@@ -88,6 +177,9 @@ def generate_preorder(t):
     [2, 3, 4, 5, 6, 7]
     """
     "*** YOUR CODE HERE ***"
+    yield label(t)
+    for b in branches(t):
+        yield from generate_preorder(b)
 
 
 def remainders_generator(m):
@@ -122,61 +214,3 @@ def remainders_generator(m):
     11
     """
     "*** YOUR CODE HERE ***"
-
-
-class Tree:
-    """
-    >>> t = Tree(3, [Tree(2, [Tree(5)]), Tree(4)])
-    >>> t.label
-    3
-    >>> t.branches[0].label
-    2
-    >>> t.branches[1].is_leaf()
-    True
-    """
-
-    def __init__(self, label, branches=[]):
-        for b in branches:
-            assert isinstance(b, Tree)
-        self.label = label
-        self.branches = list(branches)
-
-    def is_leaf(self):
-        return not self.branches
-
-    def __repr__(self):
-        if self.branches:
-            branch_str = ', ' + repr(self.branches)
-        else:
-            branch_str = ''
-        return 'Tree({0}{1})'.format(self.label, branch_str)
-
-    def __str__(self):
-        def print_tree(t, indent=0):
-            tree_str = '  ' * indent + str(t.label) + "\n"
-            for b in t.branches:
-                tree_str += print_tree(b, indent + 1)
-            return tree_str
-        return print_tree(self).rstrip()
-
-
-tree = lambda label, branches=[]: Tree(label, branches)
-label = lambda t: t.label
-branches = lambda t: t.branches
-print_tree = lambda t: print(t)
-
-
-def naturals():
-    """A generator function that yields the infinite sequence of natural
-    numbers, starting at 1.
-
-    >>> m = naturals()
-    >>> type(m)
-    <class 'generator'>
-    >>> [next(m) for _ in range(10)]
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    """
-    i = 1
-    while True:
-        yield i
-        i += 1
