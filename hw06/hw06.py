@@ -37,6 +37,39 @@ class VendingMachine:
     """
     "*** YOUR CODE HERE ***"
 
+    def __init__(self, name, unit_price) -> None:
+        self.name = name
+        self.unit_price = unit_price
+        self.stock = 0
+        self.current_balance = 0
+
+    def add_funds(self, funds):
+        if self.stock == 0:
+            return f'Nothing left to vend. Please restock. Here is your ${funds}.'
+        else:
+            self.current_balance += funds
+            return f'Current balance: ${self.current_balance}'
+
+    def restock(self, stock):
+        self.stock += stock
+        return f'Current {self.name} stock: {self.stock}'
+
+    def vend(self):
+        if self.stock == 0:
+            return 'Nothing left to vend. Please restock.'
+
+        if self.current_balance > self.unit_price:
+            change = self.current_balance - self.unit_price
+            self.current_balance = 0
+            self.stock -= 1
+            return f'Here is your {self.name} and ${change} change.'
+        elif self.current_balance == self.unit_price:
+            self.stock -= 1
+            return f'Here is your {self.name}.'
+        else:
+            price_difference = self.unit_price - self.current_balance
+            return f'You must add ${price_difference} more funds.'
+
 
 class Mint:
     """A mint creates coins by stamping on years.
@@ -74,9 +107,11 @@ class Mint:
 
     def create(self, kind):
         "*** YOUR CODE HERE ***"
+        return kind(self.year)
 
     def update(self):
         "*** YOUR CODE HERE ***"
+        self.year = Mint.present_year
 
 
 class Coin:
@@ -85,6 +120,7 @@ class Coin:
 
     def worth(self):
         "*** YOUR CODE HERE ***"
+        return self.cents + max(Mint.present_year - self.year - 50, 0)
 
 
 class Nickel(Coin):
@@ -112,6 +148,16 @@ def store_digits(n):
     >>> link1 = Link(3, Link(Link(4), Link(5, Link(6))))
     """
     "*** YOUR CODE HERE ***"
+    res = None
+    while n > 0:
+        if res == None:
+            res = Link(n % 10)
+        else:
+            tmp = Link(n % 10, res)
+            res = tmp
+        n //= 10
+
+    return res
 
 
 def deep_map_mut(fn, link):
@@ -130,9 +176,15 @@ def deep_map_mut(fn, link):
     <9 <16> 25 36>
     """
     "*** YOUR CODE HERE ***"
+    if isinstance(link.first, Link):
+        deep_map_mut(fn, link.first)
+    if isinstance(link.rest, Link):
+        deep_map_mut(fn, link.rest)
+    if type(link.first) == int:
+        link.first = fn(link.first)
 
 
-def two_list(vals, amounts):
+def two_list(vals: list, amounts: list):
     """
     Returns a linked list according to the two lists that were passed in. Assume
     vals and amounts are the same size. Elements in vals represent the value, and the
@@ -152,6 +204,15 @@ def two_list(vals, amounts):
     Link(1, Link(1, Link(3, Link(3, Link(2)))))
     """
     "*** YOUR CODE HERE ***"
+    head = None
+    for i in range(len(vals)):
+        for _ in range(amounts[len(amounts) - 1 - i]):
+            if head is None:
+                head = Link(vals[len(vals) - 1 - i])
+            else:
+                tmp = Link(vals[len(vals) - 1 - i], head)
+                head = tmp
+    return head
 
 
 class VirFib():
@@ -175,12 +236,15 @@ class VirFib():
     >>> start.next().next().next().next().next().next() # Ensure start isn't changed
     VirFib object, value 8
     """
-
-    def __init__(self, value=0):
+    def __init__(self, value=0, plus_factor=1):
         self.value = value
+        self.plus_factor = plus_factor
 
     def next(self):
         "*** YOUR CODE HERE ***"
+        tmp_value = self.plus_factor
+        tmp_plus_factor = self.value + self.plus_factor
+        return VirFib(tmp_value, tmp_plus_factor)
 
     def __repr__(self):
         return "VirFib object, value " + str(self.value)
@@ -212,6 +276,35 @@ def is_bst(t):
     False
     """
     "*** YOUR CODE HERE ***"
+
+    def base(tree, func):
+        if tree.is_leaf():
+            return tree.label
+
+        values = [tree.label]
+        for b in tree.branches:
+            values.append(bst_min(b))
+        return func(values)
+
+    def bst_min(tree):
+        return base(tree, min)
+
+    def bst_max(tree):
+        return base(tree, max)
+
+    if t.is_leaf():
+        return True
+    elif len(t.branches) > 2:
+        return False
+    elif len(t.branches) == 1:
+        return (bst_max(t.branches[0]) <= t.label
+                or bst_min(t.branches[0]) >= t.label) and is_bst(t.branches[0])
+    elif len(t.branches) == 2:
+        if bst_max(t.branches[0]) > t.label or t.label > bst_min(
+                t.branches[1]):
+            return False
+        else:
+            return is_bst(t.branches[0]) and is_bst(t.branches[1])
 
 
 class Link:
@@ -266,7 +359,6 @@ class Tree:
     >>> t.branches[1].is_leaf()
     True
     """
-
     def __init__(self, label, branches=[]):
         for b in branches:
             assert isinstance(b, Tree)
@@ -289,4 +381,5 @@ class Tree:
             for b in t.branches:
                 tree_str += print_tree(b, indent + 1)
             return tree_str
+
         return print_tree(self).rstrip()
